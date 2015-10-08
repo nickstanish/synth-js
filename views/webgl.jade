@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title= title
+    script(src="/vendors/jquery/jquery.min.js")
+    script(src="/vendors/lodash/dist/lodash.min.js")
+    script(src="/vendors/moment/moment.js")
+
+    script(src="/javascripts/sylvester.js")
+    script(src="/javascripts/glUtils.js")
+    script(src="/javascripts/canvas.js")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    .content-wrapper
+      canvas#canvas
