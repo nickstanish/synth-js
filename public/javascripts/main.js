@@ -9,8 +9,12 @@ for (var x = 0; x < 127; ++x)
 
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+var TYPE_SQUARE = 'square';
+var TYPE_TRIANGLE = 'triangle';
+var TYPE_SAWTOOTH = 'sawtooth';
+var TYPE_SINE = 'sine';
 
-
+var soundWaveType = TYPE_SAWTOOTH;
 
 // set options for the oscillator
 
@@ -20,8 +24,8 @@ function Note (frequency) {
   this.oscillator.connect(this.gainNode);
   this.gainNode.connect(audioCtx.destination);
   this.gainNode.gain.value = 0;
-  this.oscillator.type = 'square'; // sine wave — other values are 'square', 'sawtooth', 'triangle' and 'custom'
-  this.oscillator.frequency.value = frequency; 
+  this.oscillator.type = soundWaveType;
+  this.oscillator.frequency.value = frequency;
 }
 
 Note.prototype.start = function () {
@@ -32,11 +36,11 @@ Note.prototype.start = function () {
     if (self.gainNode.gain.value >= 0.5) {
       window.clearInterval(self.start_id);
       self.gainNode.gain.value = 0.5;
-      // self.stop();  
+      // self.stop();
     }
   }, 20);
-  
-  
+
+
 };
 
 Note.prototype.stop = function () {
@@ -58,7 +62,7 @@ Note.prototype.stop = function () {
       }, 50);
     }
   }, 20);
-  
+
 };
 
 
@@ -71,20 +75,15 @@ var CurY;
 // then set new gain and putch values
 
 // document.onmousemove = updatePage;
-var keyMap = {
-  A: 36,
-  S: 37,
-  D: 38,
-  F: 39,
-  G: 40,
-  H: 41,
-  I: 42,
-  J: 43,
-  K: 44,
-  O: 45,
-  L: 46,
-  P: 47
-};
+var offset = 8 * 2;
+var keys = [
+  'Q','A','W','S','E','D','R','F','T','G','Y','H','U','J','I','K','O','L','P'
+];
+var keyMap = {};
+keys.map(function (key, i) {
+  keyMap[key] = 36 + i + offset;
+});
+
 
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
@@ -111,14 +110,14 @@ function onKeyUp(event) {
   }
 }
 
-var previousNote = null; 
-function updatePage(e) {   
+var previousNote = null;
+function updatePage(e) {
   var WIDTH = window.innerWidth;
   var HEIGHT = window.innerHeight;
 
     CurX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
     CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
-    
+
     // oscillator.frequency.value = (CurX/WIDTH) * maxFreq;
     // gainNode.gain.value = (CurY/HEIGHT) * maxVol;
 
