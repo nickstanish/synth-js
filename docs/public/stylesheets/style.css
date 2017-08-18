@@ -1,0 +1,154 @@
+html, :root {
+  font-size: 14pt;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+body {
+  letter-spacing: normal;
+  line-height: 1.3;
+  color: #4d4d4d;
+  background-color: #efefef;
+  border-top: 2px solid #289ccb;
+  font-size: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+#wrapper {
+  min-height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+a,
+a:visited,
+a:active {
+  font-weight: 600;
+  color: #4d4d4d;
+}
+
+a:hover,
+a:focus {
+  color: #289ccb;
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+}
+
+.card-description {
+  padding: 15px;
+  color: #4d4d4d;
+}
+
+.card-description header {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.item {
+  -webkit-box-shadow: 0 7px 14px -6px #474856;
+          box-shadow: 0 7px 14px -6px #474856;
+  background-color: #fff;
+}
+
+.card-description {
+  color: #3a3a3a;
+}
+
+.title-name {
+  font-size: 2.7rem;
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.title-position {
+  margin-bottom: 2rem;
+}
+
+.header-divider {
+  height: 10px;
+}
+
+.links {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-flow: row wrap;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          flex-flow: row wrap;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+  max-width: 800px;
+  margin: 15px auto;
+}
+
+.items {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-flow: row wrap;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          flex-flow: row wrap;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.item {
+  min-height: 250px;
+  margin: 15px;
+  padding: 0px;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+          flex: 1 1 auto;
+  min-width: 250px;
+  max-width: 250px;
+  width: 250px;
+}
+
+.link {
+  padding: 8px 16px;
+  -webkit-box-flex: 0;
+      -ms-flex: 0;
+          flex: 0;
+}
+.link a,
+.link a:visited,
+.link a:active  {
+  color: #999999;
+}
+
+.link a:hover,
+.link a:focus  {
+  color: #289ccb;
+}
+
+@media only screen and (max-width : 768px) {
+  .item {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width : 480px) {
+  .item {
+    max-width: 100%;
+    width: 100%;
+  }
+}
