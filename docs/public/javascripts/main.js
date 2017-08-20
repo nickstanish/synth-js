@@ -16,6 +16,14 @@ var TYPE_SINE = 'sine';
 
 var soundWaveType = TYPE_SAWTOOTH;
 
+soundTypeElement = document.getElementById('controls-wave-type');
+soundTypeElement.value = soundWaveType;
+soundTypeElement.addEventListener("change", function onSoundTypeChange(event) {
+  var value = event.target.value;
+  if ([TYPE_SAWTOOTH, TYPE_SINE, TYPE_SQUARE, TYPE_TRIANGLE].indexOf(value) >= 0) {
+    soundWaveType = value;
+  }
+}, false);
 // set options for the oscillator
 
 function Note (frequency) {
@@ -66,6 +74,8 @@ Note.prototype.stop = function () {
 };
 
 
+var oldNotes = {};
+
 // Mouse pointer coordinates
 
 var CurX;
@@ -80,18 +90,54 @@ var keys = [
   'Q','A','W','S','E','D','R','F','T','G','Y','H','U','J','I','K','O','L','P'
 ];
 var keyMap = {};
+var keysElement = document.getElementById('instrument-keys');
 keys.map(function (key, i) {
-  keyMap[key] = 36 + i + offset;
+  const note = 36 + i + offset;
+  keyMap[key] = note;
+
+  var node = document.createElement("div");
+  node.setAttribute('class', 'note');
+  node.setAttribute('data-key', key);
+  node.setAttribute('data-note', note);
+  node.addEventListener("mousedown", touchHandler.bind(null, key), false);
+  node.addEventListener("mouseup", touchHandler.bind(null, key), false);
+  node.addEventListener("touchstart", touchHandler.bind(null, key), false);
+  node.addEventListener("touchstart", touchHandler.bind(null, key), false);
+  node.addEventListener("touchmove", touchHandler.bind(null, key), false);
+  node.addEventListener("touchend", touchHandler.bind(null, key), false);
+
+  node.innerHTML = "<span>" + key + "</span>";
+  keysElement.appendChild(node);
 });
+
+function updateKeyboardNoteAppearance(notes) {
+  for (var note in notes) {
+    var noteElement = document.querySelector('[data-key="' + note  + '"]');
+    if (notes[note] !== null) {
+      noteElement.classList.add('active');
+    } else {
+      noteElement.classList.remove('active');
+    }
+  }
+}
 
 
 document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
-var oldNotes = {};
+function touchHandler(key, event) {
+  if (event.type == "touchstart" || event.type === 'mousedown') {
+    playNote(key);
+  } else if (event.type === "touchmove") {
+    if (oldNotes[key] !== null) {
+      event.preventDefault();
+    }
+  } else if (event.type == "touchend" || event.type == "touchcancel" || event.type === 'mouseup') {
+    endNote(key);
+  }
+}
 
-function onKeyDown(event) {
-  var letter = String.fromCharCode(event.which);
+function playNote(letter) {
   if (!(letter in keyMap) || oldNotes[letter]) {
     return;
   }
@@ -100,14 +146,28 @@ function onKeyDown(event) {
   note.start();
 
   oldNotes[letter] = note;
+  updateKeyboardNoteAppearance(oldNotes);
 }
-function onKeyUp(event) {
-  var letter = String.fromCharCode(event.which);
+
+function endNote(letter) {
   if (oldNotes[letter]) {
     console.log(letter + " - stopping");
     oldNotes[letter].stop();
     oldNotes[letter] = null;
   }
+  updateKeyboardNoteAppearance(oldNotes);
+}
+
+
+function onKeyDown(event) {
+  var letter = String.fromCharCode(event.which);
+  playNote(letter);
+
+}
+function onKeyUp(event) {
+  var letter = String.fromCharCode(event.which);
+  endNote(letter);
+
 }
 
 var previousNote = null;

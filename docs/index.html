@@ -6,12 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="origin">
     <title>Synth-JS</title>
-    <script src="public/javascripts/main.js"></script>
     <link rel="stylesheet" href="public/stylesheets/style.css">
   </head>
   <body>
     <div id="wrapper" class="content-wrapper">
       <p>Turn on your sound and try typing</p>
+      <div id="instrument">
+        <div id="instrument-keys">
+        </div>
+        <div id="instrument-controls">
+          <label for="controls-wave-type">Wave Type</label>
+          <select id="controls-wave-type">
+            <option value='sawtooth'>Sawtooth</option>
+            <option value='sine'>Sine</option>
+            <option value='square'>Square</option>
+            <option value='triangle'>Triangle</option>
+          </select>
+      </div>
     </div>
+    <script src="public/javascripts/main.js"></script>
   </body>
 </html>

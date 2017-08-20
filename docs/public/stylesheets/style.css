@@ -152,3 +152,42 @@ a:focus {
     width: 100%;
   }
 }
+
+#instrument-keys {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+
+#instrument-keys .note {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  padding: 20px;
+  -webkit-box-shadow: 0 2px 2px 1px rgba(0,0,0,0.3);
+          box-shadow: 0 2px 2px 1px rgba(0,0,0,0.3);
+  margin-right: 2px;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 250px;
+  max-height: 70%;
+  max-height: 70vh;
+  color: #828282;
+}
+
+#instrument-keys .note:hover {
+  background-color: #ddd;
+}
+
+#instrument-keys .note.active:hover,
+#instrument-keys .note.active {
+  background-color: #289ccb;
+}
