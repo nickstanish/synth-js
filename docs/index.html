@@ -6,13 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="origin">
     <title>Synth-JS</title>
-    <link rel="stylesheet" href="public/stylesheets/style.css">
+    <link rel="stylesheet" href="public/stylesheets/style.css?version=1503809528">
   </head>
   <body>
     <div id="wrapper" class="content-wrapper">
       <p>Turn on your sound and try typing</p>
       <div id="instrument">
-        <div id="instrument-keys">
+        <div id="instrument-keys-container">
+          <div id="instrument-keys-container__left" tabindex="0" title="Shift left">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="M68 19.1l-38.3 30 38.3 30 1.2-1.5-36.3-28.5 36.3-28.5-1.2-1.5"/>
+            </svg>
+          </div>
+          <div id="instrument-keys"></div>
+          <div id="instrument-keys-container__right" tabindex="0" title="Shift right">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="M30.4 20.6l36.3 28.5-36.3 28.5 1.2 1.5 38.3-30-38.3-30-1.2 1.5"/>
+            </svg>
+          </div>
         </div>
         <div id="instrument-controls">
           <label for="controls-wave-type">Wave Type</label>
@@ -24,6 +35,6 @@
           </select>
       </div>
     </div>
-    <script src="public/javascripts/main.js"></script>
+    <script src="public/javascripts/main.js?version=1503809528"></script>
   </body>
 </html>

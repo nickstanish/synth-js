@@ -1,11 +1,16 @@
 
+var NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+var midiNoteMap = {};
 var midi = [];
-var a = 440; // a is 440 hz...
-for (var x = 0; x < 127; ++x)
-{
-   midi.push( (a / 32) * (Math.pow(2, ((x - 9) / 12)) ));
+for (var x = 0; x < 127; ++x) {
+  var frequency = 440.0 * (Math.pow(2, ((x - 69) / 12.0)) );
+  midi.push(frequency);
+  midiNoteMap[x] = {
+    note: NOTES[x % NOTES.length],
+    frequency: frequency,
+    octave: Math.floor(x / NOTES.length)
+  };
 }
-
 
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -47,8 +52,6 @@ Note.prototype.start = function () {
       // self.stop();
     }
   }, 20);
-
-
 };
 
 Note.prototype.stop = function () {
@@ -85,30 +88,83 @@ var CurY;
 // then set new gain and putch values
 
 // document.onmousemove = updatePage;
-var offset = 8 * 2;
+var currentOffset = NOTES.length * 4;
 var keys = [
   'Q','A','W','S','E','D','R','F','T','G','Y','H','U','J','I','K','O','L','P'
 ];
 var keyMap = {};
-var keysElement = document.getElementById('instrument-keys');
-keys.map(function (key, i) {
-  const note = 36 + i + offset;
-  keyMap[key] = note;
 
-  var node = document.createElement("div");
-  node.setAttribute('class', 'note');
-  node.setAttribute('data-key', key);
-  node.setAttribute('data-note', note);
-  node.addEventListener("mousedown", touchHandler.bind(null, key), false);
-  node.addEventListener("mouseup", touchHandler.bind(null, key), false);
-  node.addEventListener("touchstart", touchHandler.bind(null, key), false);
-  node.addEventListener("touchstart", touchHandler.bind(null, key), false);
-  node.addEventListener("touchmove", touchHandler.bind(null, key), false);
-  node.addEventListener("touchend", touchHandler.bind(null, key), false);
+function clearChildren(node) {
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+}
 
-  node.innerHTML = "<span>" + key + "</span>";
-  keysElement.appendChild(node);
-});
+function generateKeyMap(offset) {
+  var keysElement = document.getElementById('instrument-keys');
+  clearChildren(keysElement);
+  var keyMap = {};
+  keys.forEach(function (key, i) {
+    var midiNumber = i + offset;
+    keyMap[key] = midiNumber;
+    var isSharp = midiNoteMap[midiNumber].note.indexOf('#') >= 0;
+    var noteClasses = "note";
+    if (isSharp) {
+      noteClasses += " note--sharp"
+    }
+
+    var node = document.createElement("div");
+    node.setAttribute('class', noteClasses);
+    node.setAttribute('data-key', key);
+    node.setAttribute('data-note', midiNumber);
+    node.addEventListener("mousedown", touchHandler.bind(null, key), false);
+    node.addEventListener("mouseup", touchHandler.bind(null, key), false);
+    node.addEventListener("touchstart", touchHandler.bind(null, key), false);
+    node.addEventListener("touchstart", touchHandler.bind(null, key), false);
+    node.addEventListener("touchmove", touchHandler.bind(null, key), false);
+    node.addEventListener("touchend", touchHandler.bind(null, key), false);
+
+
+    node.innerHTML =
+      '<div class="note__key">' +
+        '<div class="note__key-top">' +
+          '<p>' + key + '</p>' +
+          '<p>' + midiNumber + '</p>' +
+        '</div>' +
+        '<div class="note__key-bottom">' +
+          '<p>' + midiNoteMap[midiNumber].note + '</p>' +
+        '</div>' +
+      '</div>';
+    keysElement.appendChild(node);
+  });
+  return keyMap;
+}
+
+keyMap = generateKeyMap(currentOffset);
+
+var leftElement = document.getElementById('instrument-keys-container__left');
+var rightElement = document.getElementById('instrument-keys-container__right');
+leftElement.addEventListener('click', shiftKeys.bind(null, -1));
+leftElement.addEventListener('keypress', shiftKeys.bind(null, -1));
+leftElement.addEventListener('mouseout', blurElement);
+rightElement.addEventListener('click', shiftKeys.bind(null, 1));
+rightElement.addEventListener('keypress', shiftKeys.bind(null, 1));
+rightElement.addEventListener('mouseout', blurElement);
+
+function blurElement(event) {
+  event.target.blur();
+}
+
+function shiftKeys(direction, event)  {
+  if (event.type === 'keypress') {
+    // space or enter
+    if (event.which !== 13 && event.which !== 32) {
+      return;
+    }
+  }
+  currentOffset = Math.max(0, Math.min(127 - keys.length, currentOffset + direction));
+  keyMap = generateKeyMap(currentOffset);
+}
 
 function updateKeyboardNoteAppearance(notes) {
   for (var note in notes) {
@@ -141,8 +197,7 @@ function playNote(letter) {
   if (!(letter in keyMap) || oldNotes[letter]) {
     return;
   }
-  console.log(letter + " - " + keyMap[letter]);
-  var note = new Note(midi[keyMap[letter] + 23]);
+  var note = new Note(midi[keyMap[letter]]);
   note.start();
 
   oldNotes[letter] = note;
@@ -151,15 +206,47 @@ function playNote(letter) {
 
 function endNote(letter) {
   if (oldNotes[letter]) {
-    console.log(letter + " - stopping");
     oldNotes[letter].stop();
     oldNotes[letter] = null;
   }
   updateKeyboardNoteAppearance(oldNotes);
 }
 
+function playMidiAuto(number, time) {
+  time = time || 250;
+  var note = new Note(midiNoteMap[number].frequency);
+  note.start();
+  window.setTimeout(function () {
+    note.stop();
+  }, time)
+}
+
+// playMidiSeq([60, 61, 62, null, 60, 61, 62])
+function playMidiSeq(notes, time) {
+  time = time || 250;
+  var index = 0;
+  var interval = window.setInterval(function () {
+    if (notes[index] !== null) {
+      playMidiAuto(notes[index], time);
+    }
+    if (++index >= notes.length) {
+      window.clearInterval(interval);
+    }
+  }, time);
+}
 
 function onKeyDown(event) {
+  if (event.which === 37) {
+    // left arrow
+    shiftKeys(-12, event);
+    return;
+  }
+  if (event.which === 39) {
+    // right arrow
+    shiftKeys(12, event);
+    return;
+  }
+
   var letter = String.fromCharCode(event.which);
   playNote(letter);
 

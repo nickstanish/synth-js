@@ -154,13 +154,17 @@ a:focus {
 }
 
 #instrument-keys {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin: 0 50px;
 }
 
 #instrument-keys .note {
@@ -168,7 +172,7 @@ a:focus {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  padding: 20px;
+  padding: 20px 14px;
   -webkit-box-shadow: 0 2px 2px 1px rgba(0,0,0,0.3);
           box-shadow: 0 2px 2px 1px rgba(0,0,0,0.3);
   margin-right: 2px;
@@ -181,6 +185,7 @@ a:focus {
   max-height: 70%;
   max-height: 70vh;
   color: #828282;
+  width: 60px;
 }
 
 #instrument-keys .note:hover {
@@ -190,4 +195,81 @@ a:focus {
 #instrument-keys .note.active:hover,
 #instrument-keys .note.active {
   background-color: #289ccb;
+}
+
+.note__key {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  height: 100%;
+}
+
+.note__key-top,
+.note__key-bottom {
+  line-height: 1;
+  text-align: center;
+}
+
+.note__key-bottom {
+  margin-top: auto;
+  color: #353638;
+}
+
+#instrument-keys-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+#instrument-keys-container__left,
+#instrument-keys-container__right {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  color: #289ccb;
+  z-index: 10;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+#instrument-keys-container__left:focus,
+#instrument-keys-container__left:hover,
+#instrument-keys-container__right:focus,
+#instrument-keys-container__right:hover {
+  background-color: rgba(40, 156, 203, 0.7);
+  color: #efefef;
+  outline: none;
+}
+
+#instrument-keys-container__left {
+  left: 0;
+}
+
+#instrument-keys-container__right {
+  right: 0;
+}
+
+#instrument-keys-container__right svg,
+#instrument-keys-container__left svg {
+  width: 50px;
+  height: 50px;
 }
