@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="origin">
     <title>Synth-JS</title>
-    <link rel="stylesheet" href="public/stylesheets/style.css?version=1503809528">
+    <link rel="stylesheet" href="public/stylesheets/style.css?version=1505074886">
   </head>
   <body>
     <div id="wrapper" class="content-wrapper">
@@ -26,13 +26,23 @@
           </div>
         </div>
         <div id="instrument-controls">
-          <label for="controls-wave-type">Wave Type</label>
-          <select id="controls-wave-type">
-            <option value='sawtooth'>Sawtooth</option>
-            <option value='sine'>Sine</option>
-            <option value='square'>Square</option>
-            <option value='triangle'>Triangle</option>
-          </select>
+          <div class="control-group">
+            <label for="controls-wave-type">Wave Type</label>
+            <select id="controls-wave-type">
+              <option value='sawtooth'>Sawtooth</option>
+              <option value='sine'>Sine</option>
+              <option value='square'>Square</option>
+              <option value='triangle'>Triangle</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="controls-volume">Volume</label>
+            <input id="controls-volume" type="range" min="0" max="1" step="0.1">
+          </div>
+          <div class="control-group">
+            <input id="controls-enable-compression" type="checkbox" checked>
+            <label for="controls-enable-compression" title="Reduces volume when multiple sounds play simultaneously">Enable Compression</label>
+          </div>
       </div>
     </div>
     <script src="public/javascripts/main.js?version=1503809528"></script>

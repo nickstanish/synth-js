@@ -12,7 +12,39 @@ for (var x = 0; x < 127; ++x) {
   };
 }
 
+var INITIAL_COMPRESSION_ENABLED = true;
+var MIN_GAIN = 0;
+var INITIAL_GAIN = 0.5;
+var MAX_GAIN = 1;
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+var noteDestination = audioCtx.createGain();
+noteDestination.gain.value = 1;
+
+var destinationGainNode = audioCtx.createGain();
+destinationGainNode.gain.value = INITIAL_GAIN;
+destinationGainNode.connect(audioCtx.destination);
+
+var compressor = audioCtx.createDynamicsCompressor();
+compressor.threshold.value = -30;
+compressor.knee.value = 40;
+compressor.ratio.value = 10;
+compressor.attack.value = 0;
+compressor.release.value = 0.25;
+
+if (INITIAL_COMPRESSION_ENABLED) {
+  noteDestination.connect(compressor);
+  compressor.connect(destinationGainNode);
+} else {
+  noteDestination.connect(destinationGainNode);
+}
+
+var volumeElement = document.getElementById('controls-volume');
+volumeElement.value = INITIAL_GAIN;
+volumeElement.addEventListener("change", function onVolumeChange(event) {
+  var value = event.target.value;
+  destinationGainNode.gain.value = Math.max(Math.min(parseFloat(value), MAX_GAIN), MIN_GAIN);
+}, false);
 
 var TYPE_SQUARE = 'square';
 var TYPE_TRIANGLE = 'triangle';
@@ -29,38 +61,62 @@ soundTypeElement.addEventListener("change", function onSoundTypeChange(event) {
     soundWaveType = value;
   }
 }, false);
+
+compressionElement = document.getElementById('controls-enable-compression');
+compressionElement.checked = INITIAL_COMPRESSION_ENABLED;
+compressionElement.addEventListener("change", function onCompressionEnabledChanged(event) {
+  var value = event.target.checked;
+  noteDestination.disconnect();
+  if (value) {
+    noteDestination.connect(compressor);
+    compressor.connect(destinationGainNode);
+  } else {
+    compressor.disconnect();
+    noteDestination.connect(destinationGainNode);
+  }
+}, false);
+
+
 // set options for the oscillator
+var NOTE_ATTACK_GAIN = 0.8;
+var NOTE_ATTACK_TIME_MS = 100;
+var NOTE_ATTACK_STEPS = 10.0;
+
+var NOTE_DECAY_TIME_MS = 180;
+var NOTE_DECAY_GAIN = 0;
+var NOTE_DECAY_STEPS = 10.0;
 
 function Note (frequency) {
   this.oscillator = audioCtx.createOscillator();
   this.gainNode = audioCtx.createGain();
   this.oscillator.connect(this.gainNode);
-  this.gainNode.connect(audioCtx.destination);
+  this.gainNode.connect(noteDestination);
   this.gainNode.gain.value = 0;
   this.oscillator.type = soundWaveType;
   this.oscillator.frequency.value = frequency;
 }
 
 Note.prototype.start = function () {
+  var delta = (NOTE_ATTACK_GAIN - NOTE_DECAY_GAIN) / NOTE_ATTACK_STEPS;
   var self = this;
   this.oscillator.start();
   this.start_id = window.setInterval(function () {
-    self.gainNode.gain.value += 0.1;
-    if (self.gainNode.gain.value >= 0.5) {
+    self.gainNode.gain.value += delta;
+    if (self.gainNode.gain.value >= NOTE_ATTACK_GAIN) {
       window.clearInterval(self.start_id);
-      self.gainNode.gain.value = 0.5;
-      // self.stop();
+      self.gainNode.gain.value = NOTE_ATTACK_GAIN;
     }
-  }, 20);
+  }, NOTE_ATTACK_TIME_MS / NOTE_ATTACK_STEPS);
 };
 
 Note.prototype.stop = function () {
   var self = this;
   window.clearInterval(this.start_id);
   var id = window.setInterval(function () {
-    self.gainNode.gain.value -= 0.1;
-    if (self.gainNode.gain.value <= 0) {
-      self.gainNode.gain.value = 0;
+    var delta = (NOTE_DECAY_GAIN - NOTE_ATTACK_GAIN) / NOTE_DECAY_STEPS;
+    self.gainNode.gain.value += delta;
+    if (self.gainNode.gain.value <= NOTE_DECAY_GAIN) {
+      self.gainNode.gain.value = NOTE_DECAY_GAIN;
       window.clearInterval(id);
 
       window.setTimeout(function() {
@@ -72,22 +128,12 @@ Note.prototype.stop = function () {
         delete self.gainNode;
       }, 50);
     }
-  }, 20);
-
+  }, NOTE_DECAY_TIME_MS / NOTE_DECAY_STEPS);
 };
 
 
 var oldNotes = {};
 
-// Mouse pointer coordinates
-
-var CurX;
-var CurY;
-
-// Get new mouse pointer coordinates when mouse is moved
-// then set new gain and putch values
-
-// document.onmousemove = updatePage;
 var currentOffset = NOTES.length * 4;
 var keys = [
   'Q','A','W','S','E','D','R','F','T','G','Y','H','U','J','I','K','O','L','P'
@@ -254,32 +300,5 @@ function onKeyDown(event) {
 function onKeyUp(event) {
   var letter = String.fromCharCode(event.which);
   endNote(letter);
-
-}
-
-var previousNote = null;
-function updatePage(e) {
-  var WIDTH = window.innerWidth;
-  var HEIGHT = window.innerHeight;
-
-    CurX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-    CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
-
-    // oscillator.frequency.value = (CurX/WIDTH) * maxFreq;
-    // gainNode.gain.value = (CurY/HEIGHT) * maxVol;
-
-    var note = Math.floor((CurX/WIDTH) * midi.length);
-
-    var frequency = midi[note];
-
-    var note = new Note(frequency);
-    note.start();
-    if (previousNote) {
-      // previousNote.stop();
-    }
-    previousNote = note;
-
-
-    // oscillator.type = types[Math.floor(Math.random() * 4)];
 
 }
